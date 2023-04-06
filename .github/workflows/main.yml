@@ -9,6 +9,8 @@ env:
   UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
   PROJECT_PATH: .
+  PROJECT_NAME: unity-gameci-test
+  BUNDLE_ID: com.mamaproducties.gameci-test
 
 jobs:
   build:
@@ -18,7 +20,7 @@ jobs:
       matrix:
         include:
           - targetPlatform: iOS
-            os: macos-latest
+            os: ubuntu-latest
           - targetPlatform: Android
             os: ubuntu-latest
           #- targetPlatform: WebGL
@@ -40,12 +42,18 @@ jobs:
       - uses: game-ci/unity-builder@v2
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
+          androidAppBundle: true
+          androidKeystoreName: user
+          androidKeystoreBase64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          androidKeystorePass: ${{ secrets.ANDROID_KEYSTORE_PASS }}
+          androidKeyaliasName: ${{ secrets.ANDROID_KEYALIAS_NAME }}
+          androidKeyaliasPass: ${{ secrets.ANDROID_KEYALIAS_PASS }}
+          androidTargetSdkVersion: AndroidApiLevel31
 
       - uses: actions/upload-artifact@v3
         with:
           name: build-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
-
 
   releaseToGooglePlay:
     name: Release to the Google Play Store
@@ -54,10 +62,9 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GOOGLE_PLAY_KEY_FILE: ${{ secrets.GOOGLE_PLAY_KEY_FILE }}
-      GOOGLE_PLAY_KEY_FILE_PATH:
-        ${{ format('{0}/fastlane/google-fastlane.json', github.workspace) }}
+      GOOGLE_PLAY_KEY_FILE_PATH: ${{ format('{0}/fastlane/google-fastlane.json', github.workspace) }}
       ANDROID_BUILD_FILE_PATH: ${{ format('{0}/build/Android/Android.aab', github.workspace) }}
-      ANDROID_PACKAGE_NAME: ${{ secrets.ANDROID_PACKAGE_NAME }}
+      ANDROID_PACKAGE_NAME: $BUNDLE_ID
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v2
@@ -76,7 +83,7 @@ jobs:
       - name: Upload to Google Play Internal
         uses: maierj/fastlane-action@v2.0.1
         with:
-          lane: 'android internal' # Change to upload to a different lane
+          lane: "android internal" # Change to upload to a different lane
       - name: Cleanup to avoid storage limit
         if: always()
         uses: geekyeggo/delete-artifact@v1
@@ -113,8 +120,8 @@ jobs:
           APPSTORE_P8: ${{ secrets.APPSTORE_P8 }}
 
           IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
-          IOS_BUNDLE_ID: com.company.application # Change it to match your Unity bundle id
-          PROJECT_NAME: Your Project Name # Change it to match your project's name
+          IOS_BUNDLE_ID: $BUNDLE_ID
+          PROJECT_NAME: $PROJECT_NAME
         run: |
           eval "$(ssh-agent -s)"
           ssh-add - <<< "${MATCH_DEPLOY_KEY}"
