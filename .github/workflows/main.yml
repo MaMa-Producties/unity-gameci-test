@@ -47,7 +47,7 @@ jobs:
           path: build/${{ matrix.targetPlatform }}
 
 
- releaseToGooglePlay:
+  releaseToGooglePlay:
     name: Release to the Google Play Store
     needs: build
     if: needs.build.result == 'success'
