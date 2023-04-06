@@ -78,10 +78,10 @@ jobs:
       - name: Set up Fastlane
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: 2.7.2
+          ruby-version: 3.0
           bundler-cache: true
       - name: Upload to Google Play Internal
-        uses: maierj/fastlane-action@v2.0.1
+        uses: maierj/fastlane-action@v3.0.0
         with:
           lane: "android internal" # Change to upload to a different lane
       - name: Cleanup to avoid storage limit
