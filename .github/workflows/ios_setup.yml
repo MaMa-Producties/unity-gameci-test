@@ -15,7 +15,6 @@ jobs:
       - name: Build iOS
         shell: bash
         run: |
-          bundle lock --add-platform x86_64-linux
           bundle exec fastlane ios init_ci
         env:
           APPSTORE_ISSUER_ID: ${{ secrets.APPSTORE_ISSUER_ID }}
