@@ -39,7 +39,7 @@ jobs:
 
       - uses: game-ci/unity-builder@v2
         with:
-          targetPlatform:k ${{ matrix.targetPlatform }}
+          targetPlatform: ${{ matrix.targetPlatform }}
 
       - uses: actions/upload-artifact@v2
         with:
