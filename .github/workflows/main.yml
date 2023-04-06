@@ -10,7 +10,8 @@ env:
   UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
   PROJECT_PATH: .
   PROJECT_NAME: unity-gameci-test
-  BUNDLE_ID: com.mamaproducties.gameci-test
+  IOS_BUNDLE_ID: com.mamaproducties.gameci-test
+  ANDROID_PACKAGE_NAME: com.mamaproducties.gameci-test
 
 jobs:
   build:
@@ -120,8 +121,6 @@ jobs:
           APPSTORE_P8: ${{ secrets.APPSTORE_P8 }}
 
           IOS_BUILD_PATH: ${{ format('{0}/build/iOS', github.workspace) }}
-          IOS_BUNDLE_ID: $BUNDLE_ID
-          PROJECT_NAME: $PROJECT_NAME
         run: |
           eval "$(ssh-agent -s)"
           ssh-add - <<< "${MATCH_DEPLOY_KEY}"
